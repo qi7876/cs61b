@@ -12,8 +12,7 @@ public class ParticleSimulator {
             'f', ParticleFlavor.FIRE,
             '.', ParticleFlavor.EMPTY,
             'n', ParticleFlavor.FOUNTAIN,
-            'z', ParticleFlavor.FLOWER
-    );
+            'z', ParticleFlavor.FLOWER);
 
     public Particle[][] particles;
     public int width;
@@ -40,7 +39,7 @@ public class ParticleSimulator {
     }
 
     public Map<Direction, Particle> getNeighbors(int x, int y) {
-        Particle SENTINEL= new Particle(ParticleFlavor.BARRIER);
+        Particle SENTINEL = new Particle(ParticleFlavor.BARRIER);
 
         HashMap<Direction, Particle> neighbors = new HashMap<>();
         if (validIndex(x + 1, y)) {
@@ -71,6 +70,7 @@ public class ParticleSimulator {
             for (int y = 0; y < height; y += 1) {
                 Map<Direction, Particle> neighbors = getNeighbors(x, y);
                 particles[x][y].action(neighbors);
+                particles[x][y].decrementLifespan();
             }
         }
     }
