@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class BombTest {
     // DO NOT MODIFY THIS FILE
     // You won't be able to find any passwords here, sorry!
-    public static final String BOMB_FILE = "src/bomb/Bomb.java";
+    public static final String BOMB_FILE = "fa26-qi7876/lab02/src/bomb/Bomb.java";
 
     @Test
     @Tag("phase0")
