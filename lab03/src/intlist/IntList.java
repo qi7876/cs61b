@@ -9,39 +9,87 @@ public class IntList {
         rest = r;
     }
 
-    /** Replaces all instances of a with b in L.
-     *  Modifies the passed list. Iterative (no recursion allowed). */
+    /**
+     * Replaces all instances of a with b in L.
+     * Modifies the passed list. Iterative (no recursion allowed).
+     */
     public static void replaceID(IntList L, int a, int b) {
         // TODO: Fill in this method (destructive, iterative)
+        IntList p = L;
+        while (p != null) {
+            if (p.first == a) {
+                p.first = b;
+            }
+            p = p.rest;
+        }
     }
 
-    /** Returns a copy of L, but with all instances of a replaced by b.
-     *  Does not modify the passed list. Recursive. */
+    /**
+     * Returns a copy of L, but with all instances of a replaced by b.
+     * Does not modify the passed list. Recursive.
+     */
     public static IntList replaceRND(IntList L, int a, int b) {
         // TODO: Fill in this method (non-destructive, recursive)
-        return null;
+        if (L == null) {
+            return null;
+        }
+        if (L.first == a) {
+            return new IntList(b, replaceRND(L.rest, a, b));
+        } else {
+            return new IntList(L.first, replaceRND(L.rest, a, b));
+        }
     }
 
-    /** Replaces all instances of a with b in L.
-     *  Modifies the passed list. Recursive. */
+    /**
+     * Replaces all instances of a with b in L.
+     * Modifies the passed list. Recursive.
+     */
     public static void replaceRD(IntList L, int a, int b) {
         // TODO: Fill in this method (destructive, recursive)
+        if (L == null) {
+            return;
+        }
+        if (L.first == a) {
+            L.first = b;
+        }
+        replaceRD(L.rest, a, b);
     }
 
-    /** Adds nodes to this list so that the resulting sequence is a stair,
-     *  i.e. each element after the first is one more, one less, or equal
-     *  to the previous element. Does not remove or modify any elements.
-     *  If the sequence is already a stair, does nothing. Returns this list.
-     *  Example: [2, 5, 3].stairify() results in [2, 3, 4, 5, 4, 3]. */
+    /**
+     * Adds nodes to this list so that the resulting sequence is a stair,
+     * i.e. each element after the first is one more, one less, or equal
+     * to the previous element. Does not remove or modify any elements.
+     * If the sequence is already a stair, does nothing. Returns this list.
+     * Example: [2, 5, 3].stairify() results in [2, 3, 4, 5, 4, 3].
+     */
     public IntList stairify() {
         // TODO: Fill in this method (extra, exam-level practice)
+        if (rest == null) {
+            return this;
+        }
+        IntList p = this;
+        while (p != null && p.rest != null) {
+            int curr = p.first;
+            int next = p.rest.first;
+            if (curr - next > 1) {
+                IntList new_node = new IntList(curr - 1, p.rest);
+                p.rest = new_node;
+            } else if (curr - next < -1) {
+                IntList new_node = new IntList(curr + 1, p.rest);
+                p.rest = new_node;
+            }
+            p = p.rest;
+        }
+
         return this;
     }
 
-    /** The Boxes and Pointers exercise from the spec. Set a breakpoint on the
-     *  first line, then step through in the Java Visualizer, predicting the
-     *  picture before each step. (Careful: partway through, the lists briefly
-     *  contain a cycle, so code that walks a list would loop forever.) */
+    /**
+     * The Boxes and Pointers exercise from the spec. Set a breakpoint on the
+     * first line, then step through in the Java Visualizer, predicting the
+     * picture before each step. (Careful: partway through, the lists briefly
+     * contain a cycle, so code that walks a list would loop forever.)
+     */
     public static void main(String[] args) {
         IntList L1 = IntList.of(1, 2, 3);
         IntList L2 = new IntList(4, L1.rest);
@@ -51,11 +99,15 @@ public class IntList {
         L2.rest.rest = L3;
     }
 
-    /* The methods below are used by the tests for this assignment.
-       You do not need to read or understand them. */
+    /*
+     * The methods below are used by the tests for this assignment.
+     * You do not need to read or understand them.
+     */
 
-    /** Returns a new IntList containing the given values.
-     *  Example: IntList.of(1, 2, 3) is the list 1 -> 2 -> 3. */
+    /**
+     * Returns a new IntList containing the given values.
+     * Example: IntList.of(1, 2, 3) is the list 1 -> 2 -> 3.
+     */
     public static IntList of(int... values) {
         IntList L = null;
         for (int i = values.length - 1; i >= 0; i -= 1) {
