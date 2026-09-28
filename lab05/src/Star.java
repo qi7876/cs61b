@@ -1,8 +1,9 @@
 import edu.princeton.cs.algs4.In;
 
+import java.util.Collections;
 import java.util.List;
 
-public class Star {
+public class Star implements Comparable<Star> {
     private final String name;
     private final double distanceLy;
     private final double massMsun;
@@ -25,18 +26,23 @@ public class Star {
     // (except the "public class Star" line).
 
     // TODO: Make stars comparable.
+    @Override
+    public int compareTo(Star o) {
+        return Double.compare(this.massMsun, o.massMsun);
+    }
 
     public static void main(String[] args) {
         In in = new In("data/stars20.txt");
         List<Star> stars = ParseUtils.readCsv(in);
 
         // TODO: Print out the star with the greatest mass.
+        IO.println("Star with greatest mass: " + Collections.max(stars));
 
         // TODO: Comment this out after you print out the star with the greatest mass.
-        System.out.println("Loaded " + stars.size() + " stars.");
-        int show = 5;
-        for (int i = 0; i < show; i += 1) {
-            System.out.println(stars.get(i));
-        }
+        // System.out.println("Loaded " + stars.size() + " stars.");
+        // int show = 5;
+        // for (int i = 0; i < show; i += 1) {
+        //     System.out.println(stars.get(i));
+        // }
     }
 }
