@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.In;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class WordFinder {
     /**
@@ -11,7 +12,15 @@ public class WordFinder {
      */
     public static String findMax(String[] strings, Comparator<String> c) {
         // TODO: Implement this.
-        return null;
+        String max_string = strings[0];
+
+        for (int i = 1; i < strings.length; i++) {
+            if (c.compare(max_string, strings[i]) < 0) {
+                max_string = strings[i];
+            }
+        }
+
+        return max_string;
     }
 
     public static void main(String[] args) {
@@ -22,7 +31,9 @@ public class WordFinder {
         //       Use your findMax method!
         //
         //       Start by creating a Comparator that compares based on lower case vowels.
-        Comparator<String> vowelComparator = null;
+        Comparator<String> vowelComparator = WordComparators.getCharListComparator(List.of('a', 'e', 'i', 'o', 'u'));
+        IO.println("the word with the most lower case vowels: " + findMax(words, vowelComparator));
+        
 
         // Optional task: Play around with lists of words from Wikipedia articles.
         // String[] zebraWords = ParseUtils.fetchWords("https://en.wikipedia.org/wiki/zebra");
