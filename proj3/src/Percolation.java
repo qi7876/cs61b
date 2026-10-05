@@ -2,7 +2,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
     int N;
-    WeightedQuickUnionUF ds;
+    WeightedQuickUnionUF dsPercolation;
+    WeightedQuickUnionUF dsFull;
     int virtualTopID;
     int virtualBottomID;
     boolean[][] open_matrix;
@@ -10,11 +11,10 @@ public class Percolation {
 
     public Percolation(int N) {
         this.N = N;
-        // The last one is the virtual top
-        // The second-to-last one is the virtual bottom
-        this.ds = new WeightedQuickUnionUF(N * N + 2);
-        this.virtualTopID = N * N + 1;
-        this.virtualBottomID = N * N;
+        this.dsPercolation = new WeightedQuickUnionUF(N * N + 2);
+        this.dsFull = new WeightedQuickUnionUF(N * N + 1);
+        this.virtualTopID = N * N;
+        this.virtualBottomID = N * N + 1;
         this.open_matrix = new boolean[N][N];
         this.openSitesCounter = 0;
         for (int i = 0; i < N; i++) {
@@ -35,25 +35,30 @@ public class Percolation {
         int siteID = getID(row, col);
         // sits on the first row should take the union with virtual top
         if (row == 0) {
-            this.ds.union(siteID, this.virtualTopID);
+            this.dsPercolation.union(siteID, this.virtualTopID);
+            this.dsFull.union(siteID, this.virtualTopID);
         }
         // sits on the last row should take the union with virtual bottom
         if (row == this.N - 1) {
-            this.ds.union(siteID, this.virtualBottomID);
+            this.dsPercolation.union(siteID, this.virtualBottomID);
         }
 
         // order: up, down, left, right
         if (neighborStats[0] == SiteStatus.OPEN) {
-            this.ds.union(siteID, getID(row + 1, col));
+            this.dsPercolation.union(siteID, getID(row + 1, col));
+            this.dsFull.union(siteID, getID(row + 1, col));
         }
         if (neighborStats[1] == SiteStatus.OPEN) {
-            this.ds.union(siteID, getID(row - 1, col));
+            this.dsPercolation.union(siteID, getID(row - 1, col));
+            this.dsFull.union(siteID, getID(row - 1, col));
         }
         if (neighborStats[2] == SiteStatus.OPEN) {
-            this.ds.union(siteID, getID(row, col + 1));
+            this.dsPercolation.union(siteID, getID(row, col + 1));
+            this.dsFull.union(siteID, getID(row, col + 1));
         }
         if (neighborStats[3] == SiteStatus.OPEN) {
-            this.ds.union(siteID, getID(row, col - 1));
+            this.dsPercolation.union(siteID, getID(row, col - 1));
+            this.dsFull.union(siteID, getID(row, col - 1));
         }
     }
 
@@ -62,7 +67,7 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        if (this.ds.find(getID(row, col)) == this.ds.find(this.virtualTopID)) {
+        if (this.dsFull.find(getID(row, col)) == this.dsFull.find(this.virtualTopID)) {
             return true;
         }
         return false;
@@ -73,7 +78,7 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        if (this.ds.find(this.virtualBottomID) == this.ds.find(this.virtualTopID)) {
+        if (this.dsPercolation.find(this.virtualBottomID) == this.dsPercolation.find(this.virtualTopID)) {
             return true;
         }
         return false;
