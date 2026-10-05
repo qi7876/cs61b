@@ -1,37 +1,119 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    // TODO: Add any necessary instance variables.
+    int N;
+    WeightedQuickUnionUF ds;
+    int virtualTopID;
+    int virtualBottomID;
+    boolean[][] open_matrix;
+    int openSitesCounter;
 
     public Percolation(int N) {
-        // TODO: Fill in this constructor.
+        this.N = N;
+        // The last one is the virtual top
+        // The second-to-last one is the virtual bottom
+        this.ds = new WeightedQuickUnionUF(N * N + 2);
+        this.virtualTopID = N * N + 1;
+        this.virtualBottomID = N * N;
+        this.open_matrix = new boolean[N][N];
+        this.openSitesCounter = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                this.open_matrix[i][j] = false;
+            }
+        }
     }
 
     public void open(int row, int col) {
-        // TODO: Fill in this method.
+        if (isOpen(row, col)) {
+            return;
+        }
+        open_matrix[row][col] = true;
+        openSitesCounter += 1;
+
+        SiteStatus[] neighborStats = checkNeighborSitesOpenAndFull(row, col);
+        int siteID = getID(row, col);
+        // sits on the first row should take the union with virtual top
+        if (row == 0) {
+            this.ds.union(siteID, this.virtualTopID);
+        }
+        // sits on the last row should take the union with virtual bottom
+        if (row == this.N - 1) {
+            this.ds.union(siteID, this.virtualBottomID);
+        }
+
+        // order: up, down, left, right
+        if (neighborStats[0] == SiteStatus.OPEN) {
+            this.ds.union(siteID, getID(row + 1, col));
+        }
+        if (neighborStats[1] == SiteStatus.OPEN) {
+            this.ds.union(siteID, getID(row - 1, col));
+        }
+        if (neighborStats[2] == SiteStatus.OPEN) {
+            this.ds.union(siteID, getID(row, col + 1));
+        }
+        if (neighborStats[3] == SiteStatus.OPEN) {
+            this.ds.union(siteID, getID(row, col - 1));
+        }
     }
 
     public boolean isOpen(int row, int col) {
-        // TODO: Fill in this method.
-        return false;
+        return this.open_matrix[row][col];
     }
 
     public boolean isFull(int row, int col) {
-        // TODO: Fill in this method.
+        if (this.ds.find(getID(row, col)) == this.ds.find(this.virtualTopID)) {
+            return true;
+        }
         return false;
     }
 
     public int numberOfOpenSites() {
-        // TODO: Fill in this method.
-        return 0;
+        return this.openSitesCounter;
     }
 
     public boolean percolates() {
-        // TODO: Fill in this method.
+        if (this.ds.find(this.virtualBottomID) == this.ds.find(this.virtualTopID)) {
+            return true;
+        }
         return false;
     }
 
-    // TODO: Add any useful helper methods (we highly recommend this!).
-    // TODO: Remove all TODO comments before submitting.
+    private int getID(int row, int col) {
+        return row * this.N + col;
+    }
 
+    private boolean verifyPosition(int row, int col) {
+        if (row < 0 || row > this.N - 1) {
+            return false;
+        }
+        if (col < 0 || col > this.N - 1) {
+            return false;
+        }
+        return true;
+    }
+
+    private enum SiteStatus {
+        ILLEGAL,
+        BLOCKED,
+        OPEN,
+    }
+
+    private SiteStatus[] checkNeighborSitesOpenAndFull(int row, int col) {
+        SiteStatus up = checkOneSiteOpen(row + 1, col);
+        SiteStatus down = checkOneSiteOpen(row - 1, col);
+        SiteStatus left = checkOneSiteOpen(row, col + 1);
+        SiteStatus right = checkOneSiteOpen(row, col - 1);
+        return new SiteStatus[] { up, down, left, right };
+    }
+
+    private SiteStatus checkOneSiteOpen(int row, int col) {
+        if (verifyPosition(row, col)) {
+            if (isOpen(row, col)) {
+                return SiteStatus.OPEN;
+            }
+            return SiteStatus.BLOCKED;
+        }
+        return SiteStatus.ILLEGAL;
+    }
 }
