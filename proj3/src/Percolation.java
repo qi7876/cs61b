@@ -6,7 +6,7 @@ public class Percolation {
     WeightedQuickUnionUF dsFull;
     int virtualTopID;
     int virtualBottomID;
-    boolean[][] open_matrix;
+    boolean[][] openMatrix;
     int openSitesCounter;
 
     public Percolation(int N) {
@@ -15,23 +15,17 @@ public class Percolation {
         this.dsFull = new WeightedQuickUnionUF(N * N + 1);
         this.virtualTopID = N * N;
         this.virtualBottomID = N * N + 1;
-        this.open_matrix = new boolean[N][N];
+        this.openMatrix = new boolean[N][N];
         this.openSitesCounter = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                this.open_matrix[i][j] = false;
-            }
-        }
     }
 
     public void open(int row, int col) {
         if (isOpen(row, col)) {
             return;
         }
-        open_matrix[row][col] = true;
+        openMatrix[row][col] = true;
         openSitesCounter += 1;
 
-        SiteStatus[] neighborStats = checkNeighborSitesOpenAndFull(row, col);
         int siteID = getID(row, col);
         // sits on the first row should take the union with virtual top
         if (row == 0) {
@@ -44,30 +38,18 @@ public class Percolation {
         }
 
         // order: up, down, left, right
-        if (neighborStats[0] == SiteStatus.OPEN) {
-            this.dsPercolation.union(siteID, getID(row + 1, col));
-            this.dsFull.union(siteID, getID(row + 1, col));
-        }
-        if (neighborStats[1] == SiteStatus.OPEN) {
-            this.dsPercolation.union(siteID, getID(row - 1, col));
-            this.dsFull.union(siteID, getID(row - 1, col));
-        }
-        if (neighborStats[2] == SiteStatus.OPEN) {
-            this.dsPercolation.union(siteID, getID(row, col + 1));
-            this.dsFull.union(siteID, getID(row, col + 1));
-        }
-        if (neighborStats[3] == SiteStatus.OPEN) {
-            this.dsPercolation.union(siteID, getID(row, col - 1));
-            this.dsFull.union(siteID, getID(row, col - 1));
-        }
+        checkOpenAndTakeUnion(siteID, row + 1, col);
+        checkOpenAndTakeUnion(siteID, row - 1, col);
+        checkOpenAndTakeUnion(siteID, row, col + 1);
+        checkOpenAndTakeUnion(siteID, row, col - 1);
     }
 
     public boolean isOpen(int row, int col) {
-        return this.open_matrix[row][col];
+        return this.openMatrix[row][col];
     }
 
     public boolean isFull(int row, int col) {
-        if (this.dsFull.find(getID(row, col)) == this.dsFull.find(this.virtualTopID)) {
+        if (this.isOpen(row, col) && this.dsFull.find(getID(row, col)) == this.dsFull.find(this.virtualTopID)) {
             return true;
         }
         return false;
@@ -98,27 +80,10 @@ public class Percolation {
         return true;
     }
 
-    private enum SiteStatus {
-        ILLEGAL,
-        BLOCKED,
-        OPEN,
-    }
-
-    private SiteStatus[] checkNeighborSitesOpenAndFull(int row, int col) {
-        SiteStatus up = checkOneSiteOpen(row + 1, col);
-        SiteStatus down = checkOneSiteOpen(row - 1, col);
-        SiteStatus left = checkOneSiteOpen(row, col + 1);
-        SiteStatus right = checkOneSiteOpen(row, col - 1);
-        return new SiteStatus[] { up, down, left, right };
-    }
-
-    private SiteStatus checkOneSiteOpen(int row, int col) {
-        if (verifyPosition(row, col)) {
-            if (isOpen(row, col)) {
-                return SiteStatus.OPEN;
-            }
-            return SiteStatus.BLOCKED;
+    private void checkOpenAndTakeUnion(int siteID, int row, int col) {
+        if (verifyPosition(row, col) && isOpen(row, col)) {
+            this.dsPercolation.union(siteID, getID(row, col));
+            this.dsFull.union(siteID, getID(row, col));
         }
-        return SiteStatus.ILLEGAL;
     }
 }
