@@ -26,6 +26,9 @@
 **/.vscode/
 **/.history/
 
+### Zed ###
+**/.zed/
+
 ### Mac OS ###
 .DS_Store
 
