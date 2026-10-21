@@ -65,18 +65,18 @@ public class TestBSTMapExtra {
         q.put("b", "a");
         q.put("a", "a");
         q.put("d", "a");
-        q.put("e", "a");                         // a b c d e
-        assertThat(q.remove("e")).isNotNull();      // a b c d
+        q.put("e", "a"); // a b c d e
+        assertThat(q.remove("e")).isNotNull(); // a b c d
         assertThat(q.containsKey("a")).isTrue();
         assertThat(q.containsKey("b")).isTrue();
         assertThat(q.containsKey("c")).isTrue();
         assertThat(q.containsKey("d")).isTrue();
-        assertThat(q.remove("c")).isNotNull();      // a b d
+        assertThat(q.remove("c")).isNotNull(); // a b d
         assertThat(q.containsKey("a")).isTrue();
         assertThat(q.containsKey("b")).isTrue();
         assertThat(q.containsKey("d")).isTrue();
-        q.put("f", "a");                         // a b d f
-        assertThat(q.remove("d")).isNotNull();      // a b f
+        q.put("f", "a"); // a b d f
+        assertThat(q.remove("d")).isNotNull(); // a b f
         assertThat(q.containsKey("a")).isTrue();
         assertThat(q.containsKey("b")).isTrue();
         assertThat(q.containsKey("f")).isTrue();
