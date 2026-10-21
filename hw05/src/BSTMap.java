@@ -62,7 +62,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (!containsKey(key)) {
             return null;
         }
-        return removeHelper(key, this.root);
+        V value = get(key);
+        this.root = removeHelper(key, this.root);
+        size -= 1;
+        return value;
     }
 
     private BSTNode putHelper(K key, V value, BSTNode node) {
@@ -121,113 +124,38 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         keySetHelper(keys, node.rightNode);
     }
 
-    private V removeHelper(K key, BSTNode node) {
-        // find the parent node of the target node
-        // left or right
-        // // get the arbitrary biggest or smallest node
-        // // substitute
-        BSTNode removedNodeParent = findNodeParent(key, null, node);
-
-        // root node
-        if (removedNodeParent == null) {
-            V value = this.root.value;
-            BSTNode newRoot = chooseNode(this.root);
-            if (newRoot != null) {
-                newRoot.leftNode = this.root.leftNode;
-                newRoot.rightNode = this.root.rightNode;
-            }
-            this.root = newRoot;
-            size -= 1;
-            return value;
-        }
-
-        if (removedNodeParent.leftNode != null && key.compareTo(removedNodeParent.leftNode.key) == 0) {
-            // left
-            BSTNode removedNode = removedNodeParent.leftNode;
-            V value = removedNode.value;
-            BSTNode newNode = chooseNode(removedNode);
-            if (newNode != null) {
-                newNode.leftNode = removedNode.leftNode;
-                newNode.rightNode = removedNode.rightNode;
-            }
-            removedNodeParent.leftNode = newNode;
-            size -= 1;
-            return value;
-        } else {
-            // right
-            BSTNode removedNode = removedNodeParent.rightNode;
-            V value = removedNode.value;
-            BSTNode newNode = chooseNode(removedNode);
-            if (newNode != null) {
-                newNode.leftNode = removedNode.leftNode;
-                newNode.rightNode = removedNode.rightNode;
-            }
-            removedNodeParent.rightNode = newNode;
-            size -= 1;
-            return value;
-        }
-    }
-
-    private BSTNode findNodeParent(K key, BSTNode parentNode, BSTNode node) {
+    private BSTNode removeHelper(K key, BSTNode node) {
         int cmp = key.compareTo(node.key);
-        if (cmp == 0) {
-            return parentNode;
-        } else if (cmp < 0) {
-            return findNodeParent(key, node, node.leftNode);
+        if (cmp < 0) {
+            node.leftNode = removeHelper(key, node.leftNode);
+        } else if (cmp > 0) {
+            node.rightNode = removeHelper(key, node.rightNode);
         } else {
-            return findNodeParent(key, node, node.rightNode);
-        }
-    }
+            if (node.leftNode == null) {
+                return node.rightNode;
+            }
+            if (node.rightNode == null) {
+                return node.leftNode;
+            }
 
-    private BSTNode chooseNode(BSTNode node) {
-        if (node.leftNode == null && node.rightNode == null) {
-            return null;
-        } else if (node.leftNode == null) {
-            return getRightSmallestNode(node);
-        } else if (node.rightNode == null) {
-            return getLeftBiggestNode(node);
-        } else {
             if (ThreadLocalRandom.current().nextBoolean()) {
-                return getLeftBiggestNode(node);
+                BSTNode successor = node.leftNode;
+                while (successor.rightNode != null) {
+                    successor = successor.rightNode;
+                }
+                node.key = successor.key;
+                node.value = successor.value;
+                node.leftNode = removeHelper(node.key, node.leftNode);
             } else {
-                return getRightSmallestNode(node);
+                BSTNode successor = node.rightNode;
+                while (successor.leftNode != null) {
+                    successor = successor.leftNode;
+                }
+                node.key = successor.key;
+                node.value = successor.value;
+                node.rightNode = removeHelper(node.key, node.rightNode);
             }
         }
-    }
-
-    private BSTNode getLeftBiggestNode(BSTNode node) {
-        BSTNode currNode = node.leftNode;
-        BSTNode parentNode = node;
-
-        while (currNode.rightNode != null) {
-            parentNode = currNode;
-            currNode = currNode.rightNode;
-        }
-
-        if (parentNode == node) {
-            parentNode.leftNode = currNode.leftNode;
-        } else {
-            parentNode.rightNode = currNode.leftNode;
-        }
-        currNode.leftNode = null;
-        return currNode;
-    }
-
-    private BSTNode getRightSmallestNode(BSTNode node) {
-        BSTNode currNode = node.rightNode;
-        BSTNode parentNode = node;
-
-        while (currNode.leftNode != null) {
-            parentNode = currNode;
-            currNode = currNode.leftNode;
-        }
-
-        if (parentNode == node) {
-            parentNode.rightNode = currNode.rightNode;
-        } else {
-            parentNode.leftNode = currNode.rightNode;
-        }
-        currNode.rightNode = null;
-        return currNode;
+        return node;
     }
 }
