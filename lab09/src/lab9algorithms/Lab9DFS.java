@@ -29,7 +29,18 @@ public class Lab9DFS {
             throw new IllegalArgumentException("no such node: " + start);
         }
         this.g = g;
-        // TODO: Run the search from start, filling in marked, preOrder, and postOrder.
+        dfs(start);
+    }
+
+    private void dfs(String node) {
+        if (!this.marked.contains(node)) {
+            this.marked.add(node);
+            this.preOrder.add(node);
+            for (String neighbor : this.g.neighbors(node)) {
+                dfs(neighbor);
+            }
+            this.postOrder.add(node);
+        }
     }
 
     /** Returns true if s was reached by the search, i.e. there is a path
