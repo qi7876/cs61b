@@ -5,7 +5,7 @@ public class OomageTestUtility {
         int[] buckets = new int[M];
         int N = oomages.size();
         for (Oomage oomage : oomages) {
-            buckets[oomage.hashCode() % M] += 1;
+            buckets[Math.floorMod(oomage.hashCode(), M)] += 1;
         }
         for (int n : buckets) {
             if (n < N / 50 || n > N / 2.5) {
