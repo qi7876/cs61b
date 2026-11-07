@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
 public class TestSimpleOomage {
 
     @Test
@@ -22,10 +21,15 @@ public class TestSimpleOomage {
 
     @Test
     public void testHashCodePerfect() {
-        /* TODO: Write a test that ensures the hashCode is perfect,
-          meaning no two SimpleOomages should EVER have the same
-          hashCode UNLESS they have the same red, blue, and green values!
-         */
+        SimpleOomage ooA = new SimpleOomage(5, 10, 20);
+        SimpleOomage ooA2 = new SimpleOomage(10, 5, 20);
+        SimpleOomage ooA3 = new SimpleOomage(0, 15, 20);
+        SimpleOomage ooA4 = new SimpleOomage(5, 5, 25);
+        SimpleOomage ooA5 = new SimpleOomage(5, 10, 20);
+        assertThat(ooA.hashCode()).isNotEqualTo(ooA2.hashCode());
+        assertThat(ooA.hashCode()).isNotEqualTo(ooA3.hashCode());
+        assertThat(ooA.hashCode()).isNotEqualTo(ooA4.hashCode());
+        assertThat(ooA.hashCode()).isEqualTo(ooA5.hashCode());
     }
 
     @Test
@@ -39,7 +43,6 @@ public class TestSimpleOomage {
         assertThat(ooA).isNotEqualTo("ketchup");
     }
 
-    /*
     @Test
     public void testHashCodeAndEqualsConsistency() {
         SimpleOomage ooA = new SimpleOomage(5, 10, 20);
@@ -47,10 +50,9 @@ public class TestSimpleOomage {
         HashSet<SimpleOomage> hashSet = new HashSet<>();
         hashSet.add(ooA);
         assertThat(hashSet.contains(ooA2)).isTrue();
-    }*/
+    }
 
-    /* TODO: Uncomment this test after you finish haveNiceHashCodeSpread in OomageTestUtility */
-    /*@Test
+    @Test
     public void testRandomOomagesHashCodeSpread() {
         List<Oomage> oomages = new ArrayList<>();
         int N = 10000;
@@ -60,5 +62,5 @@ public class TestSimpleOomage {
         }
 
         assertThat(OomageTestUtility.haveNiceHashCodeSpread(oomages, 10)).isTrue();
-    }*/
+    }
 }

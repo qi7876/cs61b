@@ -3,6 +3,7 @@ package lab10algorithms;
 import lab10lib.ExtrinsicMinPQ;
 import lab10lib.Lab10Graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,36 +31,50 @@ public class Lab10Dijkstras {
             throw new IllegalArgumentException("no such node: " + source);
         }
         this.source = source;
-
-        /* 
-           To get you started: every node begins in the fringe. The source
-           has distance 0 and every other node has "infinite" distance,
-           which we represent with Integer.MAX_VALUE. Dijkstra's then
-           repeatedly removes the closest node and relaxes its edges.
-           */
-        ExtrinsicMinPQ fringe = new ExtrinsicMinPQ();
-        for (String node : g.nodes()) {
-            distTo.put(node, Integer.MAX_VALUE);
-            fringe.add(node, Integer.MAX_VALUE);
+        ExtrinsicMinPQ pq = new ExtrinsicMinPQ();
+        this.distTo.put(this.source, 0);
+        for (String neighbor : g.neighbors(this.source)) {
+            this.edgeTo.put(neighbor, source);
+            pq.add(neighbor, g.edgeWeight(source, neighbor));
         }
-        distTo.put(source, 0);
-        fringe.changePriority(source, 0);
-
-        // TODO: Fill in the rest of Dijkstra's algorithm.
+        while (pq.size() != 0) {
+            String node = pq.removeSmallest();
+            String prev = this.edgeTo.get(node);
+            int d = this.distTo.get(prev) + g.edgeWeight(prev, node);
+            this.distTo.put(node, d);
+            for (String neighbor : g.neighbors(node)) {
+                if (this.distTo.containsKey(neighbor)) {
+                    continue;
+                }
+                int candidateDistance = d + g.edgeWeight(node, neighbor);
+                if (pq.contains(neighbor)) {
+                    String currentPrev = this.edgeTo.get(neighbor);
+                    int currentDistance = this.distTo.get(currentPrev) + g.edgeWeight(currentPrev, neighbor);
+                    if (candidateDistance < currentDistance) {
+                        pq.changePriority(neighbor, candidateDistance);
+                        this.edgeTo.put(neighbor, node);
+                    }
+                    continue;
+                }
+                this.edgeTo.put(neighbor, node);
+                pq.add(neighbor, candidateDistance);
+            }
+        }
     }
 
     /** Returns true if there is a path from the source to v. The source
      *  always has a path to itself. */
     public boolean hasPathTo(String v) {
-        // TODO: Replace this with your implementation.
-        return false;
+        return this.distTo.containsKey(v);
     }
 
     /** Returns the total weight of the shortest path from the source to v.
      *  Throws IllegalArgumentException if there is no path to v. */
     public int distTo(String v) {
-        // TODO: Replace this with your implementation.
-        return 0;
+        if (!this.hasPathTo(v)) {
+            throw new IllegalArgumentException("no path to: " + v);
+        }
+        return this.distTo.get(v);
     }
 
     /** Returns the shortest path from the source to v as a list of nodes,
@@ -67,7 +82,15 @@ public class Lab10Dijkstras {
      *  itself is the one-element list [source].
      *  Throws IllegalArgumentException if there is no path to v. */
     public List<String> shortestPathTo(String v) {
-        // TODO: Replace this with your implementation.
-        return null;
+        if (!this.hasPathTo(v)) {
+            throw new IllegalArgumentException("no path to: " + v);
+        }
+        List<String> reversedPath = new ArrayList<>();
+        while (this.edgeTo.get(v) != null) {
+            reversedPath.add(v);
+            v = this.edgeTo.get(v);
+        }
+        reversedPath.add(v);
+        return new ArrayList<>(reversedPath.reversed());
     }
 }
