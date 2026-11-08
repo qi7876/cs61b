@@ -21,20 +21,22 @@ public class Main {
     public static final String SYNSETS_SIZE16_FILE = PREFIX + "synsets_size16.txt";
     public static final String HYPONYMS_SIZE16_FILE = PREFIX + "hyponyms_size16.txt";
     public static final String SYNSETS_SIZE1000_FILE = PREFIX + "synsets_size1000.txt";
-    public static final String HYPONYMS_SIZE1000_FILE = PREFIX +  "hyponyms_size1000.txt";
+    public static final String HYPONYMS_SIZE1000_FILE = PREFIX + "hyponyms_size1000.txt";
     public static final String SYNSETS_SIZE82191_FILE = PREFIX + "synsets_size82191.txt";
-    public static final String HYPONYMS_SIZE82191_FILE = PREFIX +  "hyponyms_size82191.txt";
-
+    public static final String HYPONYMS_SIZE82191_FILE = PREFIX + "hyponyms_size82191.txt";
 
     static {
         LoggerFactory.getLogger(Main.class).info("\033[1;38mChanging text color to white");
     }
+
     public static void main(String[] args) {
         NgordnetServer hns = new NgordnetServer();
 
-        // TODO: modify HyponymsHandler
         // hns.register("hyponyms", new HyponymsHandler());
         // Register all handlers before calling startUp.
+        WorldNet wn = new WorldNet(WORD_HISTORY_SIZE3_FILE, YEAR_HISTORY_FILE);
+
+        hns.register("hyponyms", new HyponymsHandler(wn));
         hns.startUp();
 
         System.out.println("Finished server startup! Visit http://localhost:4567/ngordnet.html");
