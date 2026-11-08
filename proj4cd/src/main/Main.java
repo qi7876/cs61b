@@ -34,7 +34,7 @@ public class Main {
 
         // hns.register("hyponyms", new HyponymsHandler());
         // Register all handlers before calling startUp.
-        WorldNet wn = new WorldNet(WORD_HISTORY_SIZE3_FILE, YEAR_HISTORY_FILE);
+        WorldNet wn = new WorldNet(SYNSETS_SIZE16_FILE, HYPONYMS_SIZE16_FILE);
 
         hns.register("hyponyms", new HyponymsHandler(wn));
         hns.startUp();
