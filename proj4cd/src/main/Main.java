@@ -35,11 +35,13 @@ public class Main {
         // hns.register("hyponyms", new HyponymsHandler());
         // Register all handlers before calling startUp.
         WorldNet wn = new WorldNet(SYNSETS_SIZE16_FILE, HYPONYMS_SIZE16_FILE);
-        NGramMap ngm = new NGramMap(WORD_HISTORY_SIZE3_FILE, YEAR_HISTORY_FILE);
+        NGramMap ngm = new NGramMap(WORD_HISTORY_SIZE14377_FILE, YEAR_HISTORY_FILE);
 
         hns.register("history", new HistoryHandler(ngm));
         hns.register("historytext", new HistoryTextHandler(ngm));
         hns.register("hyponyms", new HyponymsHandler(ngm, wn));
+        hns.register("hypohist", new HypohistHandler(ngm, wn));
+        hns.register("hypohisttext", new HypohistTextHandler(ngm, wn));
         hns.startUp();
 
         System.out.println("Finished server startup! Visit http://localhost:4567/ngordnet.html");
