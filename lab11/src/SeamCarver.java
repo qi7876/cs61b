@@ -1,6 +1,8 @@
 import edu.princeton.cs.algs4.Picture;
 
 import java.awt.Color;
+import java.awt.List;
+import java.util.Deque;
 
 /** Resizes a picture one seam at a time using the seam carving technique.
  *  Pixel (x, y) is column x, row y, with (0, 0) in the upper left. */
@@ -92,24 +94,33 @@ public class SeamCarver {
         int w = e.length;
         int h = e[0].length;
 
-        //TODO: Initialize m, the 2d array you are returning
+        double[][] m = new double[w][h];
 
-        //TODO: Populate the first row. HINT: What stays constant: x or y?
+        for (int i = 0; i < w; i++) {
+            m[i][0] = e[i][0];
+        }
 
-        //TODO: Uncomment (Highlight, then CMD or CTRL + /), then iterate through the rest
-        // for (int y = _; y < _; y += 1) {
-        //     for (int x = _; x < _; x += 1) {
-        //         //TODO: Find the minimum of the three tiles "above".
-        //         //Remember to consider cases where we are on the edge
+        for (int y = 1; y < h; y += 1) {
+            if (w == 1) {
+                m[0][y] = e[0][y] + m[0][y - 1];
+                continue;
+            }
 
+            for (int x = 0; x < w; x += 1) {
+                double minCost;
+                if (x == 0) {
+                    minCost = Math.min(m[0][y - 1], m[1][y - 1]);
+                } else if (x == w - 1) {
+                    minCost = Math.min(m[x - 1][y - 1], m[x][y - 1]);
+                } else {
+                    minCost = Math.min(m[x - 1][y - 1], Math.min(m[x][y - 1], m[x + 1][y - 1]));
+                }
 
-        //         //TODO: Set m[x][y] to be "e[x][y] + above" (what you just calculated)
+                m[x][y] = e[x][y] + minCost;
+            }
+        }
 
-        //     }
-        // }
-
-        //TODO: Return m
-        return null;
+        return m;
     }
 
     /** Given a table M as produced by computeM, returns the vertical seam it
@@ -125,20 +136,51 @@ public class SeamCarver {
         int w = m.length;
         int h = m[0].length;
 
-        //TODO: Initialize seam, the array you are returning
+        int[] seam = new int[h];
 
-        //TODO: Set the last element of the seam to be the x-index of the smallest value in the bottom row
-        //Hint: Find the minimum value while also keeping track of the x-index corresponding to that minimum value
+        if (w == 1) {
+            for (int y = 0; y < h; y++) {
+                seam[y] = 0;
+            }
+            return seam;
+        }
 
-        // //TODO: Uncomment (Highlight, then CMD or CTRL + /), then iterate upwards from the 2nd-to-last row
-        // for (int y = _; y >= _; y -= 1) {
-        //     //TODO: Set the value of seam[y] to be the x-index of the lowest of the
-        //     //(up-to) three values around seam[y+1]
-        //     //Hint: This is the same formula as earlier, but with only 3 elements
+        int minIndex = -1;
+        Double minCost = Double.MAX_VALUE;
+        for (int i = 0; i < w; i++) {
+            if (m[i][h - 1] < minCost) {
+                minIndex = i;
+                minCost = m[i][h - 1];
+            }
+        }
+        seam[h - 1] = minIndex;
 
-        // }
-        //TODO: Return the seam
-        return null;
+        for (int y = h - 2; y >= 0; y -= 1) {
+            int lastIndex = seam[y + 1];
+            if (lastIndex == 0) {
+                if (m[0][y] > m[1][y]) {
+                    seam[y] = 1;
+                } else {
+                    seam[y] = 0;
+                }
+            } else if (lastIndex == w - 1) {
+                if (m[w - 2][y] > m[w - 1][y]) {
+                    seam[y] = w - 1;
+                } else {
+                    seam[y] = w - 2;
+                }
+            } else {
+                if (m[lastIndex][y] < m[lastIndex - 1][y] && m[lastIndex][y] < m[lastIndex + 1][y]) {
+                    seam[y] = lastIndex;
+                } else if (m[lastIndex - 1][y] < m[lastIndex][y] && m[lastIndex - 1][y] < m[lastIndex + 1][y]) {
+                    seam[y] = lastIndex - 1;
+                } else {
+                    seam[y] = lastIndex + 1;
+                }
+            }
+        }
+
+        return seam;
     }
 
     /** Returns a minimum-energy horizontal seam: an array of length width()
