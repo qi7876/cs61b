@@ -43,20 +43,23 @@ public class Plus implements Shape {
 
     @Override
     public int width() {
-        // TODO: A plus is 2 * arm + 1 tiles wide.
-        return 0;
+        return 2 * arm + 1;
     }
 
     @Override
     public int height() {
-        // TODO: A plus is as tall as it is wide.
-        return 0;
+        return 2 * arm + 1;
     }
 
     @Override
     public void draw(TETile[][] world) {
-        // TODO: Set world[..][..] = TILE for every tile of the plus.
         //  The horizontal bar is row y + arm, from column x to x + 2 * arm.
         //  The vertical bar is column x + arm, from row y to y + 2 * arm.
+        for (int i = x; i < x + 2 * arm + 1; i++) {
+            world[i][y + arm] = TILE;
+        }
+        for (int i = y; i < y + 2 * arm + 1; i++) {
+            world[x + arm][i] = TILE;
+        }
     }
 }

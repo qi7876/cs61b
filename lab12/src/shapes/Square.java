@@ -41,21 +41,26 @@ public class Square implements Shape {
 
     @Override
     public int width() {
-        // TODO: A square is SIDE tiles wide.
-        return 0;
+        return side;
     }
 
     @Override
     public int height() {
-        // TODO: A square is as tall as it is wide.
-        return 0;
+        return side;
     }
 
     @Override
     public void draw(TETile[][] world) {
-        // TODO: Set world[..][..] = TILE along the four edges of the square.
         //  The bottom edge is y, the top edge is y + side - 1,
         //  the left edge is x, and the right edge is x + side - 1.
         //  Do not change any tile inside the outline.
+        for (int i = y; i < y + side; i++) {
+            world[x][i] = TILE;
+            world[x + side - 1][i] = TILE;
+        }
+        for (int i = x; i < x + side; i++) {
+            world[i][y] = TILE;
+            world[i][y + side - 1] = TILE;
+        }
     }
 }
