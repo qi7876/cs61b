@@ -32,10 +32,15 @@ public class ShapeWorld {
         // RandomUtils.uniform(random, a, b) returns an int in [a, b).
         int x = RandomUtils.uniform(random, 0, WIDTH);
         int y = RandomUtils.uniform(random, 0, HEIGHT);
-        // TODO: Use random.nextBoolean() to choose between a Plus and a Square, then
+        //  Use random.nextBoolean() to choose between a Plus and a Square, then
         //  give it a random arm or side the same way x and y were picked above.
         //  Do not make a new Random here: use the one you were given.
-        return null;
+        if (random.nextBoolean()) {
+            int arm = RandomUtils.uniform(random, 1, 4);
+            return new Plus(x, y, arm);
+        }
+        int side = RandomUtils.uniform(random, 3, 7);
+        return new Square(x, y, side);
     }
 
     /**
@@ -47,16 +52,21 @@ public class ShapeWorld {
         List<Shape> placed = new ArrayList<>();
         Random random = new Random(seed);
         for (int i = 0; i < ATTEMPTS; i += 1) {
-            // TODO: Get a candidate from randomShape, and add it to PLACED if it fits in
+            //  Get a candidate from randomShape, and add it to PLACED if it fits in
             //  the world (see fitsInWorld below).
+            Shape s = randomShape(random);
+            if (fitsInWorld(s)) {
+                placed.add(s);
+            }
         }
         return placed;
     }
 
     /** Returns true if every tile of S's box is inside the WIDTH x HEIGHT world. */
     public static boolean fitsInWorld(Shape s) {
-        // TODO: Valid tiles are x in [0, WIDTH) and y in [0, HEIGHT).
-        //  See Shape.java for which tiles S's box covers.
+        if (s.x() >= 0 && s.y() >= 0 && s.x() + s.width() - 1 < WIDTH && s.y() + s.height() - 1 < HEIGHT) {
+            return true;
+        }
         return false;
     }
 
