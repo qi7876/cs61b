@@ -1,10 +1,8 @@
 package core;
 
 public class Main {
-    public static void main(String[] args) {
-
-        // build your own world!
-
-
+    public void main(String[] args) {
+        World w = new World();
+        w.run();
     }
 }
